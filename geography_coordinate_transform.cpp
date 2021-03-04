@@ -26,9 +26,9 @@
 #include <math.h>                          /*                    Cpp headers                   */
 #include <stdio.h>                         /*                                                  */
 #include <iostream>                        /*--------------------------------------------------*/
-//#include <ros/ros.h>                       /*                    ROS headers                   */
-//#include <geometry_msgs/Pose.h>            /*                                                  */
-//#include <geometry_msgs/Point.h>           /*--------------------------------------------------*/
+#include <ros/ros.h>                       /*                    ROS headers                   */
+#include <geometry_msgs/Pose.h>            /*                                                  */
+#include <geometry_msgs/Point.h>           /*--------------------------------------------------*/
 
 /***********************************************************************************************
  ***                                       DEFINE                                            ***
@@ -57,7 +57,7 @@ typedef struct {
 /***********************************************************************************************
  ***                                      FUNCTIONS                                          ***
  *---------------------------------------------------------------------------------------------*/
-int geography_coodinate_transform_init(geography_coordinate_tf *pref, double lon, double lat, double h){
+int geography_coordinate_transform_init(geography_coordinate_tf *pref, double lon, double lat, double h){
     double e, e_2, f, sin_2_lat, R_lat_circle, R_lon_circle, den_prime_vertical, R_prime_vertical, omiga_2;
     
     if (lat > PI_F/2 || lat < -PI_F/2){
@@ -84,7 +84,7 @@ int geography_coodinate_transform_init(geography_coordinate_tf *pref, double lon
     return 0;
 }
 
-int geography_coodinate_transform_project(const geography_coordinate_tf *pref, double lon, double lat, float *x, float *y){
+int geography_coordinate_transform_project(const geography_coordinate_tf *pref, double lon, double lat, float *x, float *y){
     if(!pref->inited){
         return -1;
     }
@@ -95,7 +95,7 @@ int geography_coodinate_transform_project(const geography_coordinate_tf *pref, d
     return 0;
 }
 
-int geography_coodinate_transform_reproject(const geography_coordinate_tf *pref, float x, float y, double *lon, double *lat){
+int geography_coordinate_transform_reproject(const geography_coordinate_tf *pref, float x, float y, double *lon, double *lat){
     if(!pref->inited){
         return -1;
     }
@@ -106,7 +106,7 @@ int geography_coodinate_transform_reproject(const geography_coordinate_tf *pref,
     return 0;
 }
 
-int geography_coodinate_transform_distance(const geography_coordinate_tf *pref, double lon, double lat, float *d_x, float *d_y){
+int geography_coordinate_transform_distance(const geography_coordinate_tf *pref, double lon, double lat, float *d_x, float *d_y){
     if(!pref->inited){
         return -1;
 
@@ -120,6 +120,10 @@ int geography_coodinate_transform_distance(const geography_coordinate_tf *pref, 
     *d_y = d_lat * pref->lambada;
 
     return 0;
+}
+
+void geography_coodrdinate_gps_subscriber(const geometry_msgs::Point &gps_point){
+    
 }
 
 /***********************************************************************************************
@@ -140,16 +144,16 @@ int main()
 
 	float x_g, y_g, x_s, y_s;
 
-	geography_coodinate_transform_init(&geo_coor_ref, D2R(lon_s), D2R(lat_s), 10);
+	geography_coordinate_transform_init(&geo_coor_ref, D2R(lon_s), D2R(lat_s), 10);
 	printf("R-lat:%.3f, \r\nR-lon:%.3f\n", geo_coor_ref.lambada, geo_coor_ref.mue);
 
-	geography_coodinate_transform_project(&geo_coor_ref, D2R(lon_g), D2R(lat_g), &x_g, &y_g);
+	geography_coordinate_transform_project(&geo_coor_ref, D2R(lon_g), D2R(lat_g), &x_g, &y_g);
 	printf("g  x:%f,  y:%f\r\n",  x_g, y_g);
 
-	geography_coodinate_transform_project(&geo_coor_ref, D2R(lon_s), D2R(lat_s), &x_s, &y_s);
+	geography_coordinate_transform_project(&geo_coor_ref, D2R(lon_s), D2R(lat_s), &x_s, &y_s);
 	printf("g-->s  x:%f,  y:%f\r\n", x_g - x_s, y_g - y_s);
 
 	float d1,d2;
-	geography_coodinate_transform_distance(&geo_coor_ref, D2R(lon_g), D2R(lat_g), &d1, &d2);
+	geography_coordinate_transform_distance(&geo_coor_ref, D2R(lon_g), D2R(lat_g), &d1, &d2);
 	printf("g-->s  x:%f,  y:%f\r\n", d1, d2);
 }
