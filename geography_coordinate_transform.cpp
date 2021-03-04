@@ -26,9 +26,9 @@
 #include <math.h>                          /*                    Cpp headers                   */
 #include <stdio.h>                         /*                                                  */
 #include <iostream>                        /*--------------------------------------------------*/
-#include <ros/ros.h>                       /*                    ROS headers                   */
-#include <geometry_msgs/Pose.h>            /*                                                  */
-#include <geometry_msgs/Point.h>           /*--------------------------------------------------*/
+//#include <ros/ros.h>                       /*                    ROS headers                   */
+//#include <geometry_msgs/Pose.h>            /*                                                  */
+//#include <geometry_msgs/Point.h>           /*--------------------------------------------------*/
 
 /***********************************************************************************************
  ***                                       DEFINE                                            ***
@@ -126,13 +126,13 @@ int geography_coodinate_transform_distance(const geography_coordinate_tf *pref, 
  ***                                         MAIN                                            ***
  *---------------------------------------------------------------------------------------------*/
 
-coordinate_map_t coordinate_ref = { 0 };
+geography_coordinate_tf geo_coor_ref = { 0 };
 
 int main()
 {
 	/* 深圳 */
-	double lat = 22.55329;
-	double lon = 113.88308;
+	double lat_s = 22.55329;
+	double lon_s = 113.88308;
 
 	/* 广州 */
 	double lat_g = 23.15792;
@@ -140,16 +140,16 @@ int main()
 
 	float x_g, y_g, x_s, y_s;
 
-	coordinate_map_ref_init(&coordinate_ref, D2R(lon), D2R(lat), 10);
-	printf("R-lat:%.3f, \r\nR-lon:%.3f\n", coordinate_ref.dy_lambda, coordinate_ref.dx_mue);
+	geography_coodinate_transform_init(&geo_coor_ref, D2R(lon_s), D2R(lat_s), 10);
+	printf("R-lat:%.3f, \r\nR-lon:%.3f\n", geo_coor_ref.lambada, geo_coor_ref.mue);
 
-	coordinate_map_project(&coordinate_ref, D2R(lon_g), D2R(lat_g), &x_g, &y_g);
+	geography_coodinate_transform_project(&geo_coor_ref, D2R(lon_g), D2R(lat_g), &x_g, &y_g);
 	printf("g  x:%f,  y:%f\r\n",  x_g, y_g);
 
-	coordinate_map_project(&coordinate_ref, D2R(lon), D2R(lat), &x_s, &y_s);
+	geography_coodinate_transform_project(&geo_coor_ref, D2R(lon_s), D2R(lat_s), &x_s, &y_s);
 	printf("g-->s  x:%f,  y:%f\r\n", x_g - x_s, y_g - y_s);
 
 	float d1,d2;
-	coordinate_map_ref_distance(&coordinate_ref, D2R(lon_g), D2R(lat_g), &d1, &d2);
+	geography_coodinate_transform_distance(&geo_coor_ref, D2R(lon_g), D2R(lat_g), &d1, &d2);
 	printf("g-->s  x:%f,  y:%f\r\n", d1, d2);
 }
